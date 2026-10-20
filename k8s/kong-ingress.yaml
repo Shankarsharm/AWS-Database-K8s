@@ -1,0 +1,32 @@
+---
+# Kong Ingress Routing for Frontend and Backend
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ecommerce-ingress
+  annotations:
+    kubernetes.io/ingress.class: "kong"
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:
+  - hosts:
+    - shop.YOUR_EC2_IP.nip.io # Replace YOUR_EC2_IP with your actual public IP
+    secretName: shop-tls-secret
+  rules:
+  - host: shop.YOUR_EC2_IP.nip.io # Replace YOUR_EC2_IP with your actual public IP
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-svc
+            port:
+              number: 8000
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-svc
+            port:
+              number: 8000

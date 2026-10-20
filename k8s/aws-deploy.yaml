@@ -1,0 +1,65 @@
+---
+# Backend Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: app-backend:latest
+        imagePullPolicy: Never
+        env:
+        - name: DB_HOST
+          value: "YOUR_RDS_ENDPOINT_HERE" # e.g., database-1.cjo8ay26mmls.ap-south-1.rds.amazonaws.com
+        - name: REDIS_HOST
+          value: "YOUR_REDIS_ENDPOINT_HERE" # e.g., ecommerce-redis.oiedui.ng.0001.aps1.cache.amazonaws.com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+---
+# Frontend Deployment & Service
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: app-frontend:latest
+        imagePullPolicy: Never
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 8000
